@@ -1,0 +1,72 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: postgresql-12
+  namespace: pega
+  labels:
+    app: postgresql-12
+    app.kubernetes.io/component: postgresql-12
+    app.kubernetes.io/instance: postgresql-12
+    app.kubernetes.io/name: postgresql-12
+    app.kubernetes.io/part-of: postgresql-12
+    app.openshift.io/runtime: postgresql
+    app.openshift.io/runtime-namespace: pega
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: postgresql-12
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: postgresql-12
+        deployment: postgresql-12
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: postgres
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: postgresql-12
+          env:
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql
+                  key: database-name
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql
+                  key: database-password
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql
+                  key: database-user
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/pgsql/data
+          terminationMessagePolicy: File
+          image: 'image-registry.openshift-image-registry.svc:5000/pega/postgresql-12@sha256:ae2072090c01f4062c5b3186b5a4a082331161a46ddf64657fcfff7faf1dc5d7'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
