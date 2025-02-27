@@ -26,7 +26,7 @@ srs:
     replicaCount: 2
 
     # docker image of the srs-service, platform-services/search-n-reporting-service:dockerTag
-    srsImage: "image-registry.openshift-image-registry.svc:5000/default/search-n-reporting-service-os@sha256:75fa3aaa8b2880db7342d26b64ec1b011489b159f555c1055c279bc997654d2e"
+    srsImage: "image-registry.openshift-image-registry.svc:5000/pega/search-n-reporting-service-os@sha256:75fa3aaa8b2880db7342d26b64ec1b011489b159f555c1055c279bc997654d2e"
 
     # To avoid exposing Docker credentials, optionally create a separate Docker config secret.
     # Specify secret names as an array of comma-separated strings. For example: ["secret1", "secret2"]
