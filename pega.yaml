@@ -502,7 +502,7 @@ installer:
   upgrade:
     # Type of upgrade
     # Valid upgradeType values are 'in-place' , 'zero-downtime' , 'custom' , 'out-of-place-rules' , 'out-of-place-data' .
-    upgradeType: "out-of-place"
+    upgradeType: "in-place"
     # Specify a name for a target rules schema that the upgrade process creates for patches and upgrades.
     targetRulesSchema: ""
     # Specify a name for a target data schema that the upgrade process creates for patches and upgrades.

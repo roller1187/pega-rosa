@@ -67,7 +67,6 @@ srs:
     # set the external Elasticsearch/OpenSearch cluster URL and port details below when using an externally managed Elasticsearch/OpenSearch
     # Ensure that the specified endpoint is accessible from the kubernetes cluster pods.
     domain: "opensearch-cluster-master.pega.svc.cluster.local"
-    #domain: "opensearch-cluster-master"
     port: 9200
     protocol: http
     # The Elasticsearch/OpenSearch connection supports three authentication methods: basic authentication ,
@@ -79,7 +78,7 @@ srs:
     # To specify a certificate used to authenticate an external Elasticsearch/OpenSearch service (with tls.enabled: true and srsStorage.provisionInternalESCluster: false),
     # uncomment the following lines to specify the TLS certificate name with password for your Elasticsearch/OpenSearch service.
     # Default certificatePassword value will be empty if not used.
-    certificateName: "Certificate_Name"
+    # certificateName: "Certificate_Name"
     # certificatePassword: "password"
     # To specify a certificate using a secret, uncomment the certsSecret parameter and provide the secret name containing your certificate and certificate password.
     # Use the full name of the certificate file (together with file extension, for example, “certificate.p12” or “certificate.jks”) as a key name in the secret. Use this key name
@@ -200,11 +199,11 @@ elasticsearch:
 
 # For Openshift deployments, you must enable the following custom values. For details
 # refer to https://github.com/elastic/helm-charts/tree/master/elasticsearch/examples/openshift.
-  securityContext:
-    runAsUser: null
-  podSecurityContext:
-    fsGroup: null
-    runAsUser: null
-  sysctlInitContainer:
-    enabled: false
+#  securityContext:
+#    runAsUser: null
+#  podSecurityContext:
+#    fsGroup: null
+#    runAsUser: null
+#  sysctlInitContainer:
+#    enabled: false
 
