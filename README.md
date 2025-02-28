@@ -120,6 +120,11 @@ srs.srsStorage.authCredentials.password: <SET TO 'Openshift123!'>
 ```bash
 helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml
 ```
+**NOTE:** The default NetworkPolicy in the backingservices Helm template uses a podSelector that must be patched to work with Opensearch:
+
+```bash
+oc patch networkpolicy/pega-search-networkpolicy --type=json -p '[{"op": "add", "path": "/spec/egress/0/to/0/podSelector/matchLabels", "value": {app.kubernetes.io/name: "opensearch"}}]'
+```
 
 15. Modify the values in the pega.yaml file within this repo as follows [reference](https://github.com/pegasystems/pega-helm-charts/blob/master/docs/Deploying-Pega-on-openshift.md#updating-the-pegayaml-helm-chart-values):
 
