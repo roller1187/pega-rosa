@@ -42,9 +42,9 @@ podman load -i pega_23_1_1.tar
 podman load -i pega_srs.tar
 podman load -i pega_23_install.tar
 
-podman tag pega-docker.downloads.pega.com/platform/pega:23.1.1 ${REGISTRY}/default/pega:23.1.1
-podman tag pega-docker.downloads.pega.com/platform-services/search-n-reporting-service-os:1.35.0 ${REGISTRY}/default/search-n-reporting-service-os:1.35.0
-podman tag pega-docker.downloads.pega.com/platform/installer:23.1.1 ${REGISTRY}/default/installer:23.1.1
+podman tag pega-docker.downloads.pega.com/platform/pega:23.1.1 ${REGISTRY}/pega/pega:23.1.1
+podman tag pega-docker.downloads.pega.com/platform-services/search-n-reporting-service-os:1.35.0 ${REGISTRY}/pega/search-n-reporting-service-os:1.35.0
+podman tag pega-docker.downloads.pega.com/platform/installer:23.1.1 ${REGISTRY}/pega/installer:23.1.1
 ```
 
 8. Push local images to the OpenShift internal registry
