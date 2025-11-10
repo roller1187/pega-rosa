@@ -10,7 +10,7 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: gp3
+  storageClassName: gp3-csi
   volumeMode: Filesystem
 ---
 kind: Secret
