@@ -42,9 +42,9 @@ podman load -i pega_23_1_1.tar
 podman load -i pega_srs.tar
 podman load -i pega_23_install.tar
 
-podman tag quay.io/aromero/pega:23.1.1 ${REGISTRY}/pega/pega:23.1.1
-podman tag quay.io/aromero/search-n-reporting-service-os:1.35.0 ${REGISTRY}/pega/search-n-reporting-service-os:1.35.0
-podman tag quay.io/aromero/installer:23.1.1 ${REGISTRY}/pega/installer:23.1.1
+podman tag quay.io/aromero/pega/pega:23.1.1 ${REGISTRY}/pega/pega:23.1.1
+podman tag quay.io/aromero/pega/search-n-reporting-service-os:1.35.0 ${REGISTRY}/pega/search-n-reporting-service-os:1.35.0
+podman tag quay.io/aromero/pega/installer:23.1.1 ${REGISTRY}/pega/installer:23.1.1
 ```
 
 8. Push local images to the OpenShift internal registry
