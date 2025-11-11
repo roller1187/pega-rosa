@@ -151,12 +151,19 @@ hazelcast.enabled: <SET TO 'false'>
 stream.bootstrapServer: <SET TO 'pega-kafka-cluster-kafka-bootstrap.pega.svc.cluster.local:9092' WHICH IS THE SERVICE FOR THE KAFKA BROKERS>
 ```
 
-16. Run the Helm Chart for the database schema creation and PEGA Web deployment using the following command:
+16. Run the Helm Chart for the database schema creation using the following command:
+
+```bash
+helm install pega pega/pega --namespace pega --values pega.yaml --set global.actions.execute=install-deploy
+```
+
+**NOTE:** The database install process takes about 20 minutes to complete, followed by the PEGA Web deployment
+
+**IMPORTANT:** For subsequent installs (after the DB schema has been created) use the following command to create the PEGA Web deployment:
 
 ```bash
 helm install pega pega/pega --namespace pega --values pega.yaml
 ```
-**NOTE:** The database install process takes about 20 minutes to complete, followed by the PEGA Web deployment
 
 ## Testing the User Interface:
 Once the PEGA Web pod comes online, you can access the PEGA Web container using the route specified in the pega.yaml Helm configuration file (tier.ingress.domain):
