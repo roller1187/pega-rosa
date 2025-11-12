@@ -39,7 +39,8 @@ rosa create machinepool --cluster=${CLUSTER_NAME} --name=big --replicas=1 --inst
 The Developer Perspective in OpenShift is designed to give application developers a streamlined, visual way to build, deploy, and manage workloads — without needing to dive deep into cluster administration. It focuses on application delivery, developer productivity, and rapid iteration.
 
 To switch to the developer perspective use the left hand navigation pane:
-<img src="images/nav-devview.png" height=200 width=200 />
+
+<img src="images/nav-devview.png" height=200 width=300 />
 
 #### 1. Topology View — The Big Picture
 ![alt text](images/topology.png)
