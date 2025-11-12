@@ -17,7 +17,25 @@ By the end of the workshop, you’ll have hands-on experience deploying Pega on 
 
 Let’s get started and see what’s possible when Pega meets OpenShift!
 
-# Dev Console walkthrough
+# Exercise 1 - Prepare Pega install
+To deploy Pega, we need to prepare the environment to install and run the workload. The first step is to create a project where we can deploy our Pega containers and its dependencies.
+
+```
+oc new-project pega
+```
+
+The Pega installer pod is very large and requires a machine large enough to schedule it. Using the ROSA CLI create a new MachinePool of the larger instance type
+
+Find the cluster name printed in the output
+```bash
+rosa cluster list
+```
+Create a machinepool with a 4xlarge instance type using the cluster name above
+```bash
+rosa create machinepool --cluster=${CLUSTER_NAME} --name=big --replicas=1 --instance-type=m6a.4xlarge
+```
+
+# Explain: Dev Console walkthrough
 The Developer Perspective in OpenShift is designed to give application developers a streamlined, visual way to build, deploy, and manage workloads — without needing to dive deep into cluster administration. It focuses on application delivery, developer productivity, and rapid iteration.
 
 #### 1. Topology View — The Big Picture
@@ -45,12 +63,12 @@ Quickly view and manage Routes, Services, and Ingress directly from the UI.
 Get direct access to pod logs, events, and metrics without switching to the Administrator Perspective. Drill down into pods or components to identify issues fast — great for day-to-day debugging.
 
 The Developer Perspective is all about speed and self-service — empowering developers to:
-    Deploy faster, without waiting for ops teams.
-    Visualize applications and dependencies instantly.
-    Integrate modern CI/CD and GitOps workflows.
-    Stay focused on building, not managing infrastructure.
+- Deploy faster, without waiting for ops teams.
+- Visualize applications and dependencies instantly.
+- Integrate modern CI/CD and GitOps workflows.
+- Stay focused on building, not managing infrastructure.
 
-# Deploying and Managing applications
+# Explain: Deploying and Managing applications
 
 OpenShift provides multiple ways to create and manage workloads — giving developers and operators flexibility depending on their skill level, deployment complexity, and automation needs. Let’s look at the main approaches you can use.
 
@@ -87,7 +105,59 @@ Helm is the package manager for Kubernetes, allowing you to deploy and manage ap
 - Allows parameter customization via values.yaml or CLI overrides.
 
 - Easily integrates into CI/CD and GitOps workflows.
-# Different types of workloads
+
+# Exercise 2: Deploy components required by Pega
+Pega has a dependency on various external services in order to run. These services (Kafka, Postges, OpenSearch) can also be deployed on OpenShift in containers using the various methods described above.
+
+## Deploy OpenSearch using Helm charts
+1) Assign required privileges for the service account
+```bash
+oc adm policy add-scc-to-user privileged -z default
+```
+2) Create storage for OpenSearch using the yaml in this repo. Inspect the opensearch.yaml file to view its contents.
+
+```
+oc apply -f opensearch.yaml
+```
+3) Using Helm charts, we will deploy OpenSearch
+```bash
+helm repo add opensearch https://opensearch-project.github.io/helm-charts/
+
+helm install opensearch opensearch/opensearch --version 2.17.0 --namespace pega
+
+oc scale statefulset opensearch-cluster-master --replicas=0
+```
+4) We need to set environment variables for the OpenSearch Stateful Set. We will explain more of the differences between StatefulSets, Deployments, and other mechanisms for managing Kubernetes applications in the next section.
+   
+```bash
+# Add a password and disable SSL
+oc set env statefulset/opensearch-cluster-master OPENSEARCH_INITIAL_ADMIN_PASSWORD=Openshift123!
+oc set env statefulset/opensearch-cluster-master plugins.security.disabled=true
+oc set env statefulset/opensearch-cluster-master plugins.security.ssl.http.enabled=false
+
+# Scale pods down before adding environment variables
+oc scale statefulset opensearch-cluster-master --replicas=3
+```
+## Deploy Postgres using YAML
+The Pega application requires a database to install its rule schema. For this workshop we will use a Postgres Database. Create the database using the file provided in this repo:
+```bash
+oc apply -f postgres-12.yaml
+```
+
+## Deploy Kafka using a Operator
+Pega requires a Kafka broker to be set up. For this lab we will install the Red Hat distribution of Kafka, AMQ Streams. To deploy AMQ Streams, we will use the OpenShift Operator catalog to find, configure and deploy our Kafka instance.
+
+1) from the OpenShift Console, navigate to the Operator catalog using the left hand navigation
+   ![alt text](images/image.png)
+2) Find the AMQ Streams Operator in the catalog
+   ![alt text](images/image-1.png)
+3) Once the operator deploys you should have options to create different resources. Click the "kafka" resource
+![alt text](images/image-2.png)
+4) Create a kafka resource named ***pega-kafka-cluster***. Leave all of the defaults and click Create to proceed.
+![alt text](images/image-3.png)
+5) The Kafka broker will be running when the status of the object shows READY:
+![alt text](images/image-4.png)
+# Explain: Different types of workloads
 
 Kubernetes (and by extension, OpenShift) provides several built-in controllers to manage how workloads are deployed, scaled, and maintained across a cluster. Each type serves a different purpose depending on the application’s behavior and lifecycle:
 
@@ -105,7 +175,31 @@ Together, these controllers give OpenShift the flexibility to manage everything 
     * Stateful Set/Daemon set - OpenSearch is a stateful set, highlight when and why they are used 
         * ChatGPT - provide an explanation of statefulsets and deamonsets. Explain when they are used and provide examples.
     * Jobs - the Pega batch process that spins up and creates the database. When it finishes it terminates ChatGPT - explain Kubernetes jobs and provide an example use case.
-# Troubleshooting
+# Exercise 3 - Deploy Pega backingservices via Helm chart
+1) Add the PEGA Helm repo:
+```bash
+helm repo add pega https://pegasystems.github.io/pega-helm-charts
+```
+2) Modify the values in the backingservices.yaml file within this repo as follows reference:
+```bash
+k8sProvider: <SET TO 'openshift'>
+deploymentName: <SET TO THE DESIRED NAME FOR THE OPENSHIFT DEPLOYMENT>
+srs.srsRuntime.srsImage: <REPLACE WITH THE LOCATION OF YOUR `pega-docker.downloads.pega.com/platform-services/search-n-reporting-service-os` IMAGE PREVIOUSLY LOADED TO THE INTERNAL REGISTRY>
+srs.srsStorage.provisionInternalESCluster: <SET TO 'false' TO USE THE PREVIOUSLY DEPLOYED OPENSEARCH CLUSTER>
+srs.srsStorage.domain: <SET TO THE OPENSEARCH SERVICE ADDRESS>
+srs.srsStorage.port: <SET THIS TO THE OPENSEARCH SERVICE PORT>
+srs.srsStorage.protocol: <SET TO 'http' SINCE SSL SHOULD BE DISABLED>
+srs.srsStorage.tls.enabled: <SET TO 'false'>
+srs.srsStorage.authCredentials.username: <SET TO 'admin'>
+srs.srsStorage.authCredentials.password: <SET TO 'Openshift123!'>
+```
+3) Run the Helm chart for the backingservices using the following command:
+```
+helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml 
+```
+4) You will see the Pega search pods failing to deploy. In the next section we will provide some tools to troubleshoot common issues with workloads on OpenShift
+
+# Explain: Troubleshooting
 When something goes wrong in OpenShift — a pod crash, a failed deployment, or unexpected app behavior — the platform offers several built-in tools to help you quickly identify and resolve issues. OpenShift integrates Kubernetes’ native observability features with additional developer-friendly interfaces, making troubleshooting faster and more visual.
 
 🔍 Key Troubleshooting Tools and Techniques
@@ -160,7 +254,49 @@ It’s a fast, intuitive way to spot issues across microservices at a glance.
     *  dev terminal - open up a terminal to a pod via the CLI or the oc command from the bastion
     *  events - look at the different types of events and talk about what is happening here
     * Other troubleshooting tools to talk about - oc rsh, debug pods, ssh into coreos host, 
-# Networking
+
+# Exercise 4 - Troubleshoot failed backingservice deployment
+1) Navigate to the Pod logs for the Pega Search pod. Navigate to the logs tab. You will see a failure on connecting to the opensearch database
+2) This failure is due to a NetworkPolicy blocking communication to the OpenSearch service. NetworkPolicies act as a firewall between OpenShift projects and namespaces. We need to remove this to allow communication to the OpenSearch service
+```bash
+oc patch networkpolicy/pega-search-networkpolicy --type=json -p '[{"op": "add", "path": "/spec/egress/0/to/0/podSelector/matchLabels", "value": {app.kubernetes.io/name: "opensearch"}}]'
+```   
+
+# Exercise 5 - Deploy Pega web via Helm chart
+1) Modify the values in the pega.yaml file within this repo as follows reference:
+```bash
+provider: <SET TO 'openshift'>
+jdbc.url: <SET TO 'jdbc:postgresql://postgresql-12.pega.svc.cluster.local:5432/postgres'>
+jdbc.driverClass: <SET TO 'org.postgresql.Driver'>
+jdbc.dbType: <SET TO 'postgres'>
+jdbc.driverUri: <SET TO 'https://jdbc.postgresql.org/download/postgresql-42.7.5.jar'>
+jdbc.username: <SET TO 'postgres'>
+jdbc.password: <SET TO 'postgres'>
+jdbc.rulesSchema: <SET TO 'rules'> 
+jdbc.dataSchema: <SET TO 'data'>
+docker.pega.image: <REPLACE WITH THE LOCATION OF YOUR `pega-docker.downloads.pega.com/platform/pega` IMAGE PREVIOUSLY LOADED TO THE INTERNAL REGISTRY>
+tier.ingress.domain: <SET TO THE OPENSHIFT ROUTE FOR PEGA WEB USING THE FOLLOWING FORMAT: '<app_name>-<namespace>.apps.<FQDN>'. e.g. 'pega-pega.apps.aromero.z72i.p1.openshiftusgov.com'>
+cassandra.enabled: <SET TO 'false'>
+cassandra.persistence.enabled: <SET TO 'false'>
+pegasearch.externalSearchService: <SET TO 'true'>
+pegasearch.externalURL: <SET TO 'http://opensearch-cluster-master.pega.svc.cluster.local:9200' WHICH IS THE SERVICE POINTING TO OPENSEARCH>
+installer.image: <REPLACE WITH THE LOCATION OF YOUR `pega-docker.downloads.pega.com/platform/installer` IMAGE PREVIOUSLY LOADED TO THE INTERNAL REGISTRY>
+installer.upgrade.pegaRESTUsername: <SET TO 'pega'>
+installer.upgrade.pegaRESTPassword: <SET TO 'pega'>
+hazelcast.enabled: <SET TO 'false'>
+stream.bootstrapServer: <SET TO 'pega-kafka-cluster-kafka-bootstrap.pega.svc.cluster.local:9092' WHICH IS THE SERVICE FOR THE KAFKA BROKERS>
+```
+2) Run the Helm Chart for the database schema creation and PEGA Web deployment using the following command:
+```
+helm install pega pega/pega --namespace pega --values pega.yaml --set global.actions.execute=install-deploy
+```
+3) Navigate to the installer pod and view its logs. After a moment you should see installer pod begin creating the Pega database.
+   ![alt text](images/image-5.png)
+
+NOTE: The database install process takes about 20 minutes to complete, followed by the PEGA Web deployment
+
+
+# Explain: Networking
 
 Networking in OpenShift is built on top of Kubernetes’ powerful networking model — designed to make communication between applications, services, and users consistent, secure, and automated. Every component in OpenShift — from pods to services to routes — plays a role in how traffic flows within and outside the cluster. Understanding these building blocks is essential for deploying and exposing applications effectively.
 
@@ -211,6 +347,23 @@ They’re used to isolate workloads, enforce zero-trust network models, and meet
 Policies are based on pod labels, namespaces, and ports.
 
 Think of Network Policies as firewall rules for your cluster — defining “who can talk to whom.”
+
+# Exercise 6 - Accessing the Pega UI
+
+Once the PEGA Web pod comes online, you can access the PEGA Web container using the route specified in the pega.yaml Helm configuration file (tier.ingress.domain):
+
+1) Browse to routes under networking on the left hand navigation pane.
+![alt text](images/image-6.png)
+
+2) Find the Pega route that was created and click the URL
+![alt text](images/image-7.png)  
+
+On initial login, must use the following credentials:
+```
+username: administrator@pega.com
+password: ADMIN_PASSWORD
+```
+NOTE: You will be asked to replace your password upon first login.
 
 ### Putting It All Together
 
