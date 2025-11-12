@@ -148,14 +148,18 @@ oc apply -f postgres-12.yaml
 Pega requires a Kafka broker to be set up. For this lab we will install the Red Hat distribution of Kafka, AMQ Streams. To deploy AMQ Streams, we will use the OpenShift Operator catalog to find, configure and deploy our Kafka instance.
 
 1) from the OpenShift Console, navigate to the Operator catalog using the left hand navigation
-   ![alt text](images/image.png)
+   
+   <img src="images/image.png" width="200" height=200/>
 2) Find the AMQ Streams Operator in the catalog
-   ![alt text](images/image-1.png)
+   
+   <img src="images/image-1.png" width="200" height=200/>
 3) Once the operator deploys you should have options to create different resources. Click the "kafka" resource
 ![alt text](images/image-2.png)
-4) Create a kafka resource named ***pega-kafka-cluster***. Leave all of the defaults and click Create to proceed.
+
+1) Create a kafka resource named ***pega-kafka-cluster***. Leave all of the defaults and click Create to proceed.
 ![alt text](images/image-3.png)
-5) The Kafka broker will be running when the status of the object shows READY:
+
+1) The Kafka broker will be running when the status of the object shows READY:
 ![alt text](images/image-4.png)
 # Explain: Different types of workloads
 
@@ -353,7 +357,7 @@ Think of Network Policies as firewall rules for your cluster — defining “who
 Once the PEGA Web pod comes online, you can access the PEGA Web container using the route specified in the pega.yaml Helm configuration file (tier.ingress.domain):
 
 1) Browse to routes under networking on the left hand navigation pane.
-![alt text](images/image-6.png)
+<img src="images/image-6.png" width="200" height=200/>
 
 2) Find the Pega route that was created and click the URL
 ![alt text](images/image-7.png)  
