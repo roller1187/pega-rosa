@@ -125,7 +125,7 @@ srs.srsStorage.authCredentials.password: <SET TO 'Openshift123!'>
 15. Run the Helm chart for the backingservices using the following command:
 
 ```bash
-helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml
+helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.1.0
 ```
 **NOTE:** The default NetworkPolicy in the backingservices Helm template uses a podSelector that must be patched to work with Opensearch:
 
