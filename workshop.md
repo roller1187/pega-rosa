@@ -38,17 +38,25 @@ rosa create machinepool --cluster=${CLUSTER_NAME} --name=big --replicas=1 --inst
 # Explain: Dev Console walkthrough
 The Developer Perspective in OpenShift is designed to give application developers a streamlined, visual way to build, deploy, and manage workloads — without needing to dive deep into cluster administration. It focuses on application delivery, developer productivity, and rapid iteration.
 
+To switch to the developer perspective use the left hand navigation pane:
+<img src="images/nav-devview.png" height=200 width=200 />
+
 #### 1. Topology View — The Big Picture
+![alt text](images/topology.png)
 
  The Topology view gives you a visual map of all your applications and components running in a project (namespace). You can see deployments, services, routes, and how they connect — all in real-time. It’s great for understanding relationships between microservices or quickly spotting unhealthy pods.
 
 #### 2. Add Menu — Multiple Deployment Options
-
+![alt text](images/add.png)
 The “+Add” page is your launchpad for creating new workloads. You can deploy apps using:
 - Git Repository (build and deploy directly from source)
 - Container Image (deploy pre-built images)
 - Helm Charts (template-based deployments)
 - Operator Backed Services (deploy via certified operators)
+
+View of the Helm integration in the developer perspective
+
+![alt text](images/helm-int.png)
 
 #### 3. Build & Pipelines
 
