@@ -177,7 +177,7 @@ Pega requires a Kafka broker to be set up. For this lab we will install the Red 
     Label: strimzi.io/cluster=pega-kafka-cluster
 ```
 
-<img src="images/kafka-node-pool-form.png" height=400 width= 400/>
+<img src="images/kafka-node-pool-form.png" height=500 width= 500/>
 
 1) Then go back to the original screen to create a ***Kafka*** resource
    
@@ -185,7 +185,7 @@ Pega requires a Kafka broker to be set up. For this lab we will install the Red 
 
 6) Create a kafka resource named ***pega-kafka-cluster***. Leave all of the defaults and click Create to proceed.
 
-<img src="images/image-3.png" height=400 width=400 />
+<img src="images/image-3.png" height=500 width=500 />
 
 1) The Kafka broker will be running when the status of the object shows READY:
 
