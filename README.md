@@ -167,7 +167,14 @@ stream.bootstrapServer: <SET TO 'pega-kafka-cluster-kafka-bootstrap.pega.svc.clu
 ```bash
 helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
 ```
+
 **NOTE:** The database install process takes about 20 minutes to complete, followed by the PEGA Web deployment
+
+**IMPORTANT:** For subsequent installs (after the DB schema has been created) use the following command to create the PEGA Web deployment:
+
+```bash
+helm install pega pega/pega --namespace pega --values pega.yaml
+```
 
 ## Testing the User Interface:
 Once the PEGA Web pod comes online, you can access the PEGA Web container using the route specified in the pega.yaml Helm configuration file (tier.ingress.domain):
