@@ -314,7 +314,8 @@ global:
       # Create a background tier for batch processing.  This tier uses
       # a collection of background node types and will not be exposed to
       # the load balancer.
-      nodeType: "BackgroundProcessing,Search,Batch,RealTime,Custom1,Custom2,Custom3,Custom4,Custom5,BIX"
+      nodeType: "BackgroundProcessing,Stream,Search,Batch,RealTime,Custom1,Custom2,Custom3,Custom4,Custom5,BIX"
+
 
       replicas: 1
       javaOpts: ""
