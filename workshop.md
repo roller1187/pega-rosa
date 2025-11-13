@@ -151,6 +151,10 @@ The Pega application requires a database to install its rule schema. For this wo
 ```bash
 oc apply -f postgres-12.yaml
 ```
+Once deployed, scale up the database
+```bash
+oc scale deployment/postgresql-12 --replicas=1
+```
 
 ## Deploy Kafka using a Operator
 Pega requires a Kafka broker to be set up. For this lab we will install the Red Hat distribution of Kafka, AMQ Streams. To deploy AMQ Streams, we will use the OpenShift Operator catalog to find, configure and deploy our Kafka instance.
