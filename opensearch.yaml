@@ -9,7 +9,7 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: gp3
+  storageClassName: gp3-csi
   volumeMode: Filesystem
 ---
 apiVersion: v1
@@ -23,7 +23,7 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: gp3
+  storageClassName: gp3-csi
   volumeMode: Filesystem
 ---
 apiVersion: v1
@@ -37,5 +37,5 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: gp3
+  storageClassName: gp3-csi
   volumeMode: Filesystem

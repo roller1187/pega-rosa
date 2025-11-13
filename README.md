@@ -42,9 +42,9 @@ podman load -i pega_23_1_1.tar
 podman load -i pega_srs.tar
 podman load -i pega_23_install.tar
 
-podman tag pega-docker.downloads.pega.com/platform/pega:23.1.1 ${REGISTRY}/pega/pega:23.1.1
-podman tag pega-docker.downloads.pega.com/platform-services/search-n-reporting-service-os:1.35.0 ${REGISTRY}/pega/search-n-reporting-service-os:1.35.0
-podman tag pega-docker.downloads.pega.com/platform/installer:23.1.1 ${REGISTRY}/pega/installer:23.1.1
+podman tag quay.io/aromero/pega/pega:23.1.1 ${REGISTRY}/pega/pega:23.1.1
+podman tag quay.io/aromero/pega/search-n-reporting-service-os:1.35.0 ${REGISTRY}/pega/search-n-reporting-service-os:1.35.0
+podman tag quay.io/aromero/pega/installer:23.1.1 ${REGISTRY}/pega/installer:23.1.1
 ```
 
 8. Push local images to the OpenShift internal registry
@@ -53,8 +53,15 @@ podman push ${REGISTRY}/pega/pega:23.1.1
 podman push ${REGISTRY}/pega/search-n-reporting-service-os:1.35.0
 podman push ${REGISTRY}/pega/installer:23.1.1
 ```
+9. Create a machinepool large enough to run the Pega installer pods
+```bash
+#find the cluster name printed in the output
+rosa cluster list
+#create a machinepool with a 4xlarge instance type using the cluster name above
+rosa create machinepool --cluster=${CLUSTER_NAME} --name=big --replicas=1 --instance-type=m6a.4xlarge
+```
 
-9. Deploy Openseach using the following steps:
+10. Deploy Openseach using the following steps:
 
 ```bash
 # Assign required privileges for the service account
@@ -83,24 +90,28 @@ oc set env statefulset/opensearch-cluster-master plugins.security.ssl.http.enabl
 oc scale statefulset opensearch-cluster-master --replicas=3
 ```
 
-10. Deploy PostgreSQL using the postgres-12.yaml file:
+11. Deploy PostgreSQL using the postgres-12.yaml file:
 
 ```bash
 oc apply -f postgres-12.yaml
 ```
+scale up the database
+```
+oc scale deployment/postgresql-12 --replicas=1
+```
 
-11. Deploy Kafka:
+12. Deploy Kafka:
   - Install the Streams for Apache Kafka operator using the [documentation](https://docs.redhat.com/en/documentation/red_hat_streams_for_apache_kafka/2.8/html/getting_started_with_streams_for_apache_kafka_on_openshift/proc-deploying-cluster-operator-hub-str#proc-deploying-cluster-operator-hub-str)
   - Deploy a Kafka cluster and name it 'pega-kafka-cluster'
   **NOTE:** The name of the Kafka cluster is important as it will be referenced later in PEGA deployment process (pega.yaml)
 
-12. Add the PEGA Helm repo:
+13. Add the PEGA Helm repo:
 
 ```bash
 helm repo add pega https://pegasystems.github.io/pega-helm-charts
 ```
 
-13. Modify the values in the backingservices.yaml file within this repo as follows [reference](https://github.com/pegasystems/pega-helm-charts/blob/master/docs/Deploying-Pega-on-openshift.md#updating-the-backingservicesyaml-helm-chart-values-for-the-srs-supported-when-installing-or-upgrading-to-pega-infinity-86-and-later):
+14. Modify the values in the backingservices.yaml file within this repo as follows [reference](https://github.com/pegasystems/pega-helm-charts/blob/master/docs/Deploying-Pega-on-openshift.md#updating-the-backingservicesyaml-helm-chart-values-for-the-srs-supported-when-installing-or-upgrading-to-pega-infinity-86-and-later):
 
 ```yaml
 k8sProvider: <SET TO 'openshift'>
@@ -115,10 +126,10 @@ srs.srsStorage.authCredentials.username: <SET TO 'admin'>
 srs.srsStorage.authCredentials.password: <SET TO 'Openshift123!'>
 ```
 
-14. Run the Helm chart for the backingservices using the following command:
+15. Run the Helm chart for the backingservices using the following command:
 
 ```bash
-helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml
+helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.21.6
 ```
 **NOTE:** The default NetworkPolicy in the backingservices Helm template uses a podSelector that must be patched to work with Opensearch:
 
@@ -126,7 +137,7 @@ helm install backingservices pega/backingservices --namespace pega --values back
 oc patch networkpolicy/pega-search-networkpolicy --type=json -p '[{"op": "add", "path": "/spec/egress/0/to/0/podSelector/matchLabels", "value": {app.kubernetes.io/name: "opensearch"}}]'
 ```
 
-15. Modify the values in the pega.yaml file within this repo as follows [reference](https://github.com/pegasystems/pega-helm-charts/blob/master/docs/Deploying-Pega-on-openshift.md#updating-the-pegayaml-helm-chart-values):
+16. Modify the values in the pega.yaml file within this repo as follows [reference](https://github.com/pegasystems/pega-helm-charts/blob/master/docs/Deploying-Pega-on-openshift.md#updating-the-pegayaml-helm-chart-values):
 
 ```yaml
 provider: <SET TO 'openshift'>
@@ -151,10 +162,10 @@ hazelcast.enabled: <SET TO 'false'>
 stream.bootstrapServer: <SET TO 'pega-kafka-cluster-kafka-bootstrap.pega.svc.cluster.local:9092' WHICH IS THE SERVICE FOR THE KAFKA BROKERS>
 ```
 
-16. Run the Helm Chart for the database schema creation using the following command:
+17. Run the Helm Chart for the database schema creation and PEGA Web deployment using the following command:
 
 ```bash
-helm install pega pega/pega --namespace pega --values pega.yaml --set global.actions.execute=install-deploy
+helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
 ```
 
 **NOTE:** The database install process takes about 20 minutes to complete, followed by the PEGA Web deployment

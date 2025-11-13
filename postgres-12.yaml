@@ -10,7 +10,7 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: gp3
+  storageClassName: gp3-csi
   volumeMode: Filesystem
 ---
 kind: Secret
@@ -38,7 +38,7 @@ metadata:
     app.openshift.io/runtime: postgresql
     app.openshift.io/runtime-namespace: pega
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: postgresql-12
