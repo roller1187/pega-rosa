@@ -82,6 +82,7 @@ The Developer Perspective is all about speed and self-service — empowering dev
 OpenShift provides multiple ways to create and manage workloads — giving developers and operators flexibility depending on their skill level, deployment complexity, and automation needs. Let’s look at the main approaches you can use.
 
 ## Templates — Parameterized, Reusable Blueprints
+![alt text](images/template.png)
 
 ### What they are:
 OpenShift Templates are predefined sets of Kubernetes objects (like Deployments, Services, Routes, ConfigMaps, etc.) packaged together with parameters that can be customized at deployment time.
@@ -90,10 +91,10 @@ OpenShift Templates are predefined sets of Kubernetes objects (like Deployments,
 - Great for standardized, repeatable deployments — e.g., quickly spinning up dev environments or demo apps. You can use parameters to customize image versions, replicas, or resource limits.
 - Templates are easy to store in Git and apply via the CLI or web console
 ## Operators — Declarative, Lifecycle-Aware Automation
-
+![alt text](images/operator.png)
 ### What they are:
 Operators extend Kubernetes by embedding domain-specific operational knowledge into the cluster. They use Custom Resource Definitions (CRDs) to automate not just deployment, but day-2 operations — upgrades, backups, scaling, configuration, etc.
-
+![alt text](images/operator-expanded.png)
 ### Why they’re powerful:
 
 - Provide full lifecycle management of complex applications (like Pega, databases, Kafka, etc.).
@@ -208,7 +209,7 @@ srs.srsStorage.authCredentials.password: <SET TO 'Openshift123!'>
 ```
 3) Run the Helm chart for the backingservices using the following command:
 ```
-helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml 
+helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
 ```
 4) You will see the Pega search pods failing to deploy. In the next section we will provide some tools to troubleshoot common issues with workloads on OpenShift
 
@@ -301,7 +302,7 @@ stream.bootstrapServer: <SET TO 'pega-kafka-cluster-kafka-bootstrap.pega.svc.clu
 ```
 2) Run the Helm Chart for the database schema creation and PEGA Web deployment using the following command:
 ```
-helm install pega pega/pega --namespace pega --values pega.yaml --set global.actions.execute=install-deploy
+helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
 ```
 3) Navigate to the installer pod and view its logs. After a moment you should see installer pod begin creating the Pega database.
    ![alt text](images/image-5.png)

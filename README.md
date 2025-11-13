@@ -95,6 +95,10 @@ oc scale statefulset opensearch-cluster-master --replicas=3
 ```bash
 oc apply -f postgres-12.yaml
 ```
+scale up the database
+```
+oc scale deployment/postgresql-12 --replicas=1
+```
 
 12. Deploy Kafka:
   - Install the Streams for Apache Kafka operator using the [documentation](https://docs.redhat.com/en/documentation/red_hat_streams_for_apache_kafka/2.8/html/getting_started_with_streams_for_apache_kafka_on_openshift/proc-deploying-cluster-operator-hub-str#proc-deploying-cluster-operator-hub-str)
@@ -125,7 +129,7 @@ srs.srsStorage.authCredentials.password: <SET TO 'Openshift123!'>
 15. Run the Helm chart for the backingservices using the following command:
 
 ```bash
-helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.1.0
+helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.21.6
 ```
 **NOTE:** The default NetworkPolicy in the backingservices Helm template uses a podSelector that must be patched to work with Opensearch:
 
@@ -161,7 +165,7 @@ stream.bootstrapServer: <SET TO 'pega-kafka-cluster-kafka-bootstrap.pega.svc.clu
 17. Run the Helm Chart for the database schema creation and PEGA Web deployment using the following command:
 
 ```bash
-helm install pega pega/pega --namespace pega --values pega.yaml --set global.actions.execute=install-deploy
+helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
 ```
 **NOTE:** The database install process takes about 20 minutes to complete, followed by the PEGA Web deployment
 
