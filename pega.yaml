@@ -210,7 +210,7 @@ global:
             insecureSkipVerify: false
 
       ingress:
-        enabled: true
+        enabled: false
         # For help configuring the ingress block including TLS, see the Helm chart documentation
         # https://github.com/pegasystems/pega-helm-charts/blob/master/charts/pega/README.md#ingress
 
