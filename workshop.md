@@ -160,17 +160,34 @@ Pega requires a Kafka broker to be set up. For this lab we will install the Red 
 1) from the OpenShift Console, navigate to the Operator catalog using the left hand navigation
    
    <img src="images/image.png" width="200" height=200/>
+
 2) Find the AMQ Streams Operator in the catalog
    
    <img src="images/image-1.png" width="200" height=200/>
-3) Once the operator deploys you should have options to create different resources. Click the "kafka" resource
-![alt text](images/image-2.png)
 
-1) Create a kafka resource named ***pega-kafka-cluster***. Leave all of the defaults and click Create to proceed.
+3) Once the operator deploys you should have options to create different resources. Select ***KafkaNodePool*** and click ***Create KafkaNodePool***
+
+![alt text](images/kafka-node-pool.png)
+
+4) Populate the form, only changing the following values:
+```
+    Name: pega-kafka-pool
+    Label: strimzi.io/cluster=pega-kafka-cluster
+```
+![alt text](images/kafka-node-pool-form.png)
+
+5) Then go back to the original screen to create a ***Kafka*** resource
+   
+![alt text](images/kafka.png)
+
+6) Create a kafka resource named ***pega-kafka-cluster***. Leave all of the defaults and click Create to proceed.
+   
 ![alt text](images/image-3.png)
 
-1) The Kafka broker will be running when the status of the object shows READY:
-![alt text](images/image-4.png)
+7) The Kafka broker will be running when the status of the object shows READY:
+
+![alt text](images/kafka-ready.png)
+
 # Explain: Different types of workloads
 
 Kubernetes (and by extension, OpenShift) provides several built-in controllers to manage how workloads are deployed, scaled, and maintained across a cluster. Each type serves a different purpose depending on the application’s behavior and lifecycle:
