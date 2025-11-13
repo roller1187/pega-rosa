@@ -106,7 +106,7 @@ global:
     imagePullSecretNames: []
     # Docker image information for the Pega docker image, containing the application server.
     pega:
-      image: "image-registry.openshift-image-registry.svc:5000/pega/pega@sha256:51feca2d35f07433d4b31559f661cd4be61d3a3c233ad358145047f261923fd0"
+      image: "quay.io/aromero/pega/pega:23.1.1"
 
   utilityImages:
     busybox:
@@ -494,7 +494,7 @@ pegasearch:
 
 # Pega Installer settings.
 installer:
-  image: "image-registry.openshift-image-registry.svc:5000/pega/installer@sha256:a5b999222cdc3368c1a9c380db1fdf3c5d7c9c6d878dbc90f05fa088b91f8d19"
+  image: "quay.io/aromero/pega/installer:23.1.1"
   # Set the initial administrator@pega.com password for your installation.  This will need to be changed at first login.
   # The adminPassword value cannot start with "@".
   adminPassword: "ADMIN_PASSWORD"
