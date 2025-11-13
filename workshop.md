@@ -176,9 +176,10 @@ Pega requires a Kafka broker to be set up. For this lab we will install the Red 
     Name: pega-kafka-pool
     Label: strimzi.io/cluster=pega-kafka-cluster
 ```
-![alt text](images/kafka-node-pool-form.png)
 
-5) Then go back to the original screen to create a ***Kafka*** resource
+<img src="images/kafka-node-pool-form.png" height=400 width= 400/>
+
+1) Then go back to the original screen to create a ***Kafka*** resource
    
 ![alt text](images/kafka.png)
 
@@ -204,10 +205,6 @@ Kubernetes (and by extension, OpenShift) provides several built-in controllers t
 
 Together, these controllers give OpenShift the flexibility to manage everything from always-on production workloads to on-demand compute jobs — ensuring that every type of application runs efficiently and reliably in the cluster.
 
-    * Deployment - use one of the deployments and talk about it - ChatGPT - generate a 2 sentence explanation highlighting Deployments in OpenShift
-    * Stateful Set/Daemon set - OpenSearch is a stateful set, highlight when and why they are used 
-        * ChatGPT - provide an explanation of statefulsets and deamonsets. Explain when they are used and provide examples.
-    * Jobs - the Pega batch process that spins up and creates the database. When it finishes it terminates ChatGPT - explain Kubernetes jobs and provide an example use case.
 # Exercise 3 - Deploy Pega backingservices via Helm chart
 1) Add the PEGA Helm repo:
 ```bash
