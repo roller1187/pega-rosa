@@ -20,7 +20,7 @@ Let’s get started and see what’s possible when Pega meets OpenShift!
 # Exercise 1 - Prepare Pega install
 To deploy Pega, we need to prepare the environment to install and run the workload. The first step is to create a project where we can deploy our Pega containers and its dependencies.
 
-```
+```bash
 oc new-project pega
 ```
 
@@ -126,7 +126,7 @@ oc adm policy add-scc-to-user privileged -z default
 ```
 2) Create storage for OpenSearch using the yaml in this repo. Inspect the opensearch.yaml file to view its contents.
 
-```
+```bash
 oc apply -f opensearch.yaml
 ```
 3) Using Helm charts, we will deploy OpenSearch
@@ -208,7 +208,7 @@ srs.srsStorage.authCredentials.username: <SET TO 'admin'>
 srs.srsStorage.authCredentials.password: <SET TO 'Openshift123!'>
 ```
 3) Run the Helm chart for the backingservices using the following command:
-```
+```bash
 helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
 ```
 4) You will see the Pega search pods failing to deploy. In the next section we will provide some tools to troubleshoot common issues with workloads on OpenShift
@@ -224,7 +224,7 @@ Logs are the first place to look when diagnosing application issues.
 Through the Web Console or oc logs command, you can view container output in real time or historical logs from previous pod instances.
 
 Useful for detecting application-level errors, failed startups, or exceptions during runtime.
-```
+```bash
 oc logs <pod-name>
 ```
 ### 2. Web Terminals & Remote Shell Access
@@ -232,7 +232,7 @@ oc logs <pod-name>
 The OpenShift Web Terminal (and oc rsh) lets you open a remote shell inside a running container.
 
 This is ideal for live debugging — checking configuration files, connectivity, or environment variables directly inside the pod.
-```
+```bash
 oc rsh <pod-name>
 ```
 ### 3. Events
@@ -240,7 +240,7 @@ oc rsh <pod-name>
 Kubernetes events provide insight into what’s happening inside the cluster — such as scheduling delays, image pull errors, or failed probes.
 
 You can view them per resource in the Web Console or use:
-```
+```bash
 oc get events --sort-by=.metadata.creationTimestamp
 ```
 
@@ -301,7 +301,7 @@ hazelcast.enabled: <SET TO 'false'>
 stream.bootstrapServer: <SET TO 'pega-kafka-cluster-kafka-bootstrap.pega.svc.cluster.local:9092' WHICH IS THE SERVICE FOR THE KAFKA BROKERS>
 ```
 2) Run the Helm Chart for the database schema creation and PEGA Web deployment using the following command:
-```
+```bash
 helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
 ```
 3) Navigate to the installer pod and view its logs. After a moment you should see installer pod begin creating the Pega database.
@@ -364,19 +364,34 @@ Think of Network Policies as firewall rules for your cluster — defining “who
 
 # Exercise 6 - Accessing the Pega UI
 
-Once the PEGA Web pod comes online, you can access the PEGA Web container using the route specified in the pega.yaml Helm configuration file (tier.ingress.domain):
+Once the Pega web pod is healthy, we can then create a route to access the Pega login page. While the helm charts enable you to configure a route as part of the helm install, we will walk through the process manually for demonstration purposes.
 
 1) Browse to routes under networking on the left hand navigation pane.
 <img src="images/image-6.png" width="200" height=200/>
 
-2) Find the Pega route that was created and click the URL
-![alt text](images/image-7.png)  
+2) Click the + button in the middle of the page to create a new route
+![alt text](images/create-route.png) 
+
+3) Create a new route using the form provided. Fill in the values as follows or refer to the screenshot below. When finished, click ***Create***:
+```
+Name: pega
+Service: pega-web
+Target port: 80 -> 8080
+```
+
+![alt text](images/route-populate.png)
+
+4) Once you click create, return to the route link under networking on the left panel. You should a route created, with a externally accessible URL. Click the URL to land on the Pega login screen.
+
+![alt text](images/pega-route.png)
 
 On initial login, must use the following credentials:
 ```
 username: administrator@pega.com
 password: ADMIN_PASSWORD
 ```
+
+![alt text](images/pegahome.png)
 NOTE: You will be asked to replace your password upon first login.
 
 ### Putting It All Together
