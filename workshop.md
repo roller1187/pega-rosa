@@ -181,10 +181,10 @@ Pega requires a Kafka broker to be set up. For this lab we will install the Red 
 ![alt text](images/kafka.png)
 
 6) Create a kafka resource named ***pega-kafka-cluster***. Leave all of the defaults and click Create to proceed.
-   
-![alt text](images/image-3.png)
 
-7) The Kafka broker will be running when the status of the object shows READY:
+<img src="images/image-3.png" height=400 width=400 />
+
+1) The Kafka broker will be running when the status of the object shows READY:
 
 ![alt text](images/kafka-ready.png)
 
