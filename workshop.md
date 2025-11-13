@@ -55,10 +55,6 @@ The “+Add” page is your launchpad for creating new workloads. You can deploy
 - Helm Charts (template-based deployments)
 - Operator Backed Services (deploy via certified operators)
 
-View of the Helm integration in the developer perspective
-
-![alt text](images/helm-int.png)
-
 #### 3. Build & Pipelines
 
 Integration with Tekton Pipelines means you can automate build-test-deploy workflows seamlessly.
@@ -107,6 +103,8 @@ Operators extend Kubernetes by embedding domain-specific operational knowledge i
 
 ### What they are:
 Helm is the package manager for Kubernetes, allowing you to deploy and manage applications as versioned “charts.” A chart bundles all Kubernetes manifests plus configuration values into a single deployable unit.
+
+![View of the Helm integration in the developer perspective](images/helm-int.png)
 
 ### Why they’re convenient:
 
@@ -161,7 +159,7 @@ Pega requires a Kafka broker to be set up. For this lab we will install the Red 
    
    <img src="images/image.png" width="200" height=200/>
 
-2) Find the AMQ Streams Operator in the catalog
+2) Find the ***Streams for Apache Kafka*** item in the catalog
    
    <img src="images/image-1.png" width="200" height=200/>
 
@@ -211,8 +209,9 @@ Together, these controllers give OpenShift the flexibility to manage everything 
 ```bash
 helm repo add pega https://pegasystems.github.io/pega-helm-charts
 ```
-2) Modify the values in the backingservices.yaml file within this repo as follows reference:
-```bash
+1) Inspect the values in the backingservices.yaml file within this repo. The fields have already been populated for you, but you may use this as a reference:
+   
+```
 k8sProvider: <SET TO 'openshift'>
 deploymentName: <SET TO THE DESIRED NAME FOR THE OPENSHIFT DEPLOYMENT>
 srs.srsRuntime.srsImage: <REPLACE WITH THE LOCATION OF YOUR `pega-docker.downloads.pega.com/platform-services/search-n-reporting-service-os` IMAGE PREVIOUSLY LOADED TO THE INTERNAL REGISTRY>
@@ -224,11 +223,11 @@ srs.srsStorage.tls.enabled: <SET TO 'false'>
 srs.srsStorage.authCredentials.username: <SET TO 'admin'>
 srs.srsStorage.authCredentials.password: <SET TO 'Openshift123!'>
 ```
-3) Run the Helm chart for the backingservices using the following command:
+2) Run the Helm chart for the backingservices using the following command:
 ```bash
 helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
 ```
-4) You will see the Pega search pods failing to deploy. In the next section we will provide some tools to troubleshoot common issues with workloads on OpenShift
+3) You will see the Pega search pods failing to deploy. In the next section we will provide some tools to troubleshoot common issues with workloads on OpenShift
 
 # Explain: Troubleshooting
 When something goes wrong in OpenShift — a pod crash, a failed deployment, or unexpected app behavior — the platform offers several built-in tools to help you quickly identify and resolve issues. OpenShift integrates Kubernetes’ native observability features with additional developer-friendly interfaces, making troubleshooting faster and more visual.
@@ -280,11 +279,6 @@ These dashboards help identify performance bottlenecks or resource limits causin
 The Developer Perspective Topology View offers a visual map of all workloads, showing health indicators, connection lines, and quick links to logs and terminals.
 
 It’s a fast, intuitive way to spot issues across microservices at a glance.
-
-    * console logs - switch to a pod and look at the logs for errors
-    *  dev terminal - open up a terminal to a pod via the CLI or the oc command from the bastion
-    *  events - look at the different types of events and talk about what is happening here
-    * Other troubleshooting tools to talk about - oc rsh, debug pods, ssh into coreos host, 
 
 # Exercise 4 - Troubleshoot failed backingservice deployment
 1) Navigate to the Pod logs for the Pega Search pod. Navigate to the logs tab. You will see a failure on connecting to the opensearch database
@@ -379,7 +373,7 @@ Policies are based on pod labels, namespaces, and ports.
 
 Think of Network Policies as firewall rules for your cluster — defining “who can talk to whom.”
 
-# Exercise 6 - Accessing the Pega UI
+# Exercise 6 - Create a route and access the Pega UI
 
 Once the Pega web pod is healthy, we can then create a route to access the Pega login page. While the helm charts enable you to configure a route as part of the helm install, we will walk through the process manually for demonstration purposes.
 
@@ -387,9 +381,10 @@ Once the Pega web pod is healthy, we can then create a route to access the Pega 
 <img src="images/image-6.png" width="200" height=200/>
 
 2) Click the + button in the middle of the page to create a new route
-![alt text](images/create-route.png) 
 
-3) Create a new route using the form provided. Fill in the values as follows or refer to the screenshot below. When finished, click ***Create***:
+<img src="images/create-route.png" height=200 width=250/>
+
+1) Create a new route using the form provided. Fill in the values as follows or refer to the screenshot below. When finished, click ***Create***:
 ```
 Name: pega
 Service: pega-web
@@ -424,9 +419,7 @@ In OpenShift:
 - Network Policies secure and isolate network traffic.
 
 Together, these components make OpenShift networking both flexible and secure, enabling seamless communication for everything from internal microservices to public-facing enterprise applications.
-   
-    * Services - Talk about service connections. A good place to talk about this is when the Pega Database is being created. Highlight how the Pega pod connects to the database via the service URL
-    * Routes - explain what they are and access the Pega console via the OpenShift Route and end the workshop here
+
 
 # Wrap up
 You’ve just taken a full tour through what it means to run Pega on OpenShift, from installation all the way through deployment, scaling, and troubleshooting.
