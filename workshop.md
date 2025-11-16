@@ -18,7 +18,12 @@ By the end of the workshop, you’ll have hands-on experience deploying Pega on 
 Let’s get started and see what’s possible when Pega meets OpenShift!
 
 # Exercise 1 - Prepare Pega install
-To deploy Pega, we need to prepare the environment to install and run the workload. The first step is to create a project where we can deploy our Pega containers and its dependencies.
+To deploy Pega, we need to prepare the environment to install and run the workload. Clone the workshop to your bastion host and execute the workshop from inside the pega-rosa folder.
+```bash
+git clone https://github.com/brandoncox/pega-rosa && cd pega-rosa
+```
+
+We need to create a project where we can deploy our Pega containers and its dependencies.
 
 ```bash
 oc new-project pega
@@ -28,7 +33,7 @@ The Pega installer pod is very large and requires a machine large enough to sche
 
 Find the cluster name printed in the output
 ```bash
-rosa cluster list
+rosa list cluster
 ```
 Create a machinepool with a 4xlarge instance type using the cluster name above
 ```bash
