@@ -319,7 +319,7 @@ stream.bootstrapServer: <SET TO 'pega-kafka-cluster-kafka-bootstrap.pega.svc.clu
 ```
 2) Run the Helm Chart for the database schema creation and PEGA Web deployment using the following command:
 ```bash
-helm install backingservices pega/backingservices --namespace pega --values backingservices.yaml --version 3.26.1
+helm install pega pega/pega --namespace pega --values pega.yaml --set global.actions.execute=install-deploy --version 3.26.1
 ```
 3) Navigate to the installer pod and view its logs. After a moment you should see installer pod begin creating the Pega database.
    ![alt text](images/image-5.png)
