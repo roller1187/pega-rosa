@@ -184,7 +184,7 @@ Pega requires a Kafka broker to be set up. For this lab we will install the Red 
 
 <img src="images/kafka-node-pool-form.png" height=500 width= 500/>
 
-1) Then go back to the original screen to create a ***Kafka*** resource
+5) Then go back to the original screen to create a ***Kafka*** resource
    
 ![alt text](images/kafka.png)
 
@@ -192,7 +192,29 @@ Pega requires a Kafka broker to be set up. For this lab we will install the Red 
 
 <img src="images/image-3.png" height=500 width=500 />
 
-1) The Kafka broker will be running when the status of the object shows READY:
+7) Return to the original screen to create a ***Kafka*** resource
+   
+![alt text](images/kafka.png)
+
+8) Create a KafkaNodePool resource named ***pega-kafka-pool*** using the following:
+
+```labels:
+    strimzi.io/cluster: pega-kafka-cluster
+```
+
+and also add the role "controller" as follows:
+
+```
+spec:
+  replicas: 3
+  roles:
+    - broker
+    - controller
+```
+
+<img src="images/image-8.png" height=500 width=500 />
+
+9) The Kafka broker will be running when the status of the object shows READY:
 
 ![alt text](images/kafka-ready.png)
 
