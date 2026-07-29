@@ -6,7 +6,7 @@ This repository can be used to deploy PEGA on a OpenShift self-managed or manage
 
 The instructions laid out below, are based on the instructions provided from [PEGA docs](https://github.com/pegasystems/pega-helm-charts/tree/master/docs) to deploy the application:
 
-**NOTE:** This deployment was tested on ROSA 4.15.45, using a bastion host with OS version RHEL 8.6
+**NOTE:** This deployment was tested on ROSA GovCloud 4.18, using a bastion host with OS version RHEL 8.6
 
 ## Deployment steps
 
